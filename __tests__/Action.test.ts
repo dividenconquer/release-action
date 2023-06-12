@@ -1,11 +1,11 @@
-import {Action} from "../src/Action";
-import {Artifact} from "../src/Artifact";
-import {Inputs} from "../src/Inputs";
-import {Releases} from "../src/Releases";
-import {ArtifactUploader} from "../src/ArtifactUploader";
-import {Outputs} from "../src/Outputs";
-import {ArtifactDestroyer} from "../src/ArtifactDestroyer";
-import {ActionSkipper} from "../src/ActionSkipper";
+import { Action } from "../src/Action";
+import { Artifact } from "../src/Artifact";
+import { Inputs } from "../src/Inputs";
+import { Releases } from "../src/Releases";
+import { ArtifactUploader } from "../src/ArtifactUploader";
+import { Outputs } from "../src/Outputs";
+import { ArtifactDestroyer } from "../src/ArtifactDestroyer";
+import { ActionSkipper } from "../src/ActionSkipper";
 
 const applyReleaseDataMock = jest.fn()
 const artifactDestroyMock = jest.fn()
@@ -73,7 +73,7 @@ describe("Action", () => {
 
     it('creates release if no release exists to update', async () => {
         const action = createAction(true, true)
-        const error = {status: 404}
+        const error = { status: 404 }
         getMock.mockRejectedValue(error)
 
         await action.perform()
@@ -94,11 +94,11 @@ describe("Action", () => {
 
     it('creates release if no draft releases', async () => {
         const action = createAction(true, true)
-        const error = {status: 404}
+        const error = { status: 404 }
         getMock.mockRejectedValue(error)
         listMock.mockResolvedValue({
             data: [
-                {id: id, draft: false, tag_name: tag}
+                { id: id, draft: false, tag_name: tag }
             ]
         })
 
@@ -246,7 +246,7 @@ describe("Action", () => {
 
     it('throws error when upload fails', async () => {
         const action = createAction(false, true)
-        const expectedError = {status: 404}
+        const expectedError = { status: 404 }
         uploadMock.mockRejectedValue(expectedError)
 
         expect.hasAssertions()
@@ -272,12 +272,12 @@ describe("Action", () => {
 
     it('updates draft release', async () => {
         const action = createAction(true, true)
-        const error = {status: 404}
+        const error = { status: 404 }
         getMock.mockRejectedValue(error)
         listMock.mockResolvedValue({
             data: [
-                {id: 123, draft: false, tag_name: tag},
-                {id: id, draft: true, tag_name: tag}
+                { id: 123, draft: false, tag_name: tag },
+                { id: id, draft: true, tag_name: tag }
             ]
         })
 
@@ -339,12 +339,12 @@ describe("Action", () => {
     })
 
     function assertOutputApplied() {
-        expect(applyReleaseDataMock).toBeCalledWith({id: releaseId, upload_url: url})
+        expect(applyReleaseDataMock).toBeCalledWith({ id: releaseId, upload_url: url })
     }
 
     function createAction(allowUpdates: boolean,
-                          hasArtifact: boolean,
-                          removeArtifacts: boolean = false): Action {
+        hasArtifact: boolean,
+        removeArtifacts: boolean = false): Action {
         let inputArtifact: Artifact[]
         if (hasArtifact) {
             inputArtifact = artifacts
@@ -388,6 +388,7 @@ describe("Action", () => {
 
         const MockInputs = jest.fn<Inputs, any>(() => {
             return {
+                previousTagName: '',
                 allowUpdates: allowUpdates,
                 artifactErrorsFailBuild: true,
                 artifacts: inputArtifact,
@@ -428,7 +429,7 @@ describe("Action", () => {
                 destroyArtifacts: artifactDestroyMock
             }
         })
-        
+
         const MockActionSkipper = jest.fn<ActionSkipper, any>(() => {
             return {
                 shouldSkip: shouldSkipMock

@@ -1,13 +1,13 @@
-import {Action} from "../src/Action";
+import { Action } from "../src/Action";
 import * as github from "@actions/github";
-import {Inputs} from "../src/Inputs";
-import {GithubReleases, ReleaseData} from "../src/Releases";
-import {GithubArtifactUploader} from "../src/ArtifactUploader";
+import { Inputs } from "../src/Inputs";
+import { GithubReleases, ReleaseData } from "../src/Releases";
+import { GithubArtifactUploader } from "../src/ArtifactUploader";
 import * as path from "path";
-import {FileArtifactGlobber} from "../src/ArtifactGlobber";
-import {Outputs} from "../src/Outputs";
-import {GithubArtifactDestroyer} from "../src/ArtifactDestroyer";
-import {ReleaseActionSkipper} from "../src/ActionSkipper";
+import { FileArtifactGlobber } from "../src/ArtifactGlobber";
+import { Outputs } from "../src/Outputs";
+import { GithubArtifactDestroyer } from "../src/ArtifactDestroyer";
+import { ReleaseActionSkipper } from "../src/ActionSkipper";
 
 // This test is currently intended to be manually run during development. To run:
 // - Make sure you have an environment variable named GITHUB_TOKEN assigned to your token
@@ -29,7 +29,7 @@ describe.skip('Integration Test', () => {
         )
         const artifactDestroyer = new GithubArtifactDestroyer(releases)
         const actionSkipper = new ReleaseActionSkipper(inputs.skipIfReleaseExists, releases, inputs.tag)
-        
+
         action = new Action(inputs, outputs, releases, uploader, artifactDestroyer, actionSkipper)
     })
 
@@ -40,6 +40,7 @@ describe.skip('Integration Test', () => {
     function getInputs(): Inputs {
         const MockInputs = jest.fn<Inputs, any>(() => {
             return {
+                previousTagName: '',
                 allowUpdates: true,
                 artifactErrorsFailBuild: false,
                 artifacts: artifacts(),

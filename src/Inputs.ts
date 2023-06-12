@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
-import {Context} from "@actions/github/lib/context";
-import {readFileSync} from 'fs';
-import {ArtifactGlobber} from './ArtifactGlobber';
-import {Artifact} from './Artifact';
+import { Context } from "@actions/github/lib/context";
+import { readFileSync } from 'fs';
+import { ArtifactGlobber } from './ArtifactGlobber';
+import { Artifact } from './Artifact';
 
 export interface Inputs {
     readonly allowUpdates: boolean
@@ -28,6 +28,7 @@ export interface Inputs {
     readonly updatedReleaseName?: string
     readonly updatedPrerelease?: boolean
     readonly updateOnlyUnreleased: boolean
+    readonly previousTagName: string
 }
 
 export class CoreInputs implements Inputs {
@@ -37,6 +38,11 @@ export class CoreInputs implements Inputs {
     constructor(artifactGlobber: ArtifactGlobber, context: Context) {
         this.artifactGlobber = artifactGlobber
         this.context = context
+    }
+
+    get previousTagName(): string {
+        const previousTagName = core.getInput('previousTagName')
+        return previousTagName
     }
 
     get allowUpdates(): boolean {
@@ -131,7 +137,7 @@ export class CoreInputs implements Inputs {
 
         return this.tag
     }
-    
+
     get generateReleaseNotes(): boolean {
         const generate = core.getInput('generateReleaseNotes')
         return generate == 'true'
@@ -148,7 +154,7 @@ export class CoreInputs implements Inputs {
         }
         return this.context.repo.owner
     }
-    
+
     get removeArtifacts(): boolean {
         const removes = core.getInput('removeArtifacts')
         return removes == 'true'
@@ -169,7 +175,7 @@ export class CoreInputs implements Inputs {
     get skipIfReleaseExists(): boolean {
         return core.getBooleanInput("skipIfReleaseExists")
     }
-    
+
     get tag(): string {
         const tag = core.getInput('tag')
         if (tag) {
@@ -186,7 +192,7 @@ export class CoreInputs implements Inputs {
     }
 
     get token(): string {
-        return core.getInput('token', {required: true})
+        return core.getInput('token', { required: true })
     }
 
     get updatedDraft(): boolean | undefined {
@@ -197,7 +203,7 @@ export class CoreInputs implements Inputs {
     private static get omitDraftDuringUpdate(): boolean {
         return core.getInput('omitDraftDuringUpdate') == 'true'
     }
-    
+
     get updatedPrerelease(): boolean | undefined {
         if (CoreInputs.omitPrereleaseDuringUpdate) return undefined
         return this.createdPrerelease
@@ -220,7 +226,7 @@ export class CoreInputs implements Inputs {
         if (CoreInputs.omitName || CoreInputs.omitNameDuringUpdate) return undefined
         return this.name
     }
-    
+
     get updateOnlyUnreleased(): boolean {
         return core.getInput('updateOnlyUnreleased') == 'true'
     }

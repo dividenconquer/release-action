@@ -1,7 +1,7 @@
-import {GitHub} from '@actions/github/lib/utils'
-import {OctokitResponse} from "@octokit/types";
-import {RestEndpointMethodTypes} from "@octokit/plugin-rest-endpoint-methods";
-import {Inputs} from "./Inputs";
+import { GitHub } from '@actions/github/lib/utils'
+import { OctokitResponse } from "@octokit/types";
+import { Inputs } from "./Inputs";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 
 export type CreateReleaseResponse = RestEndpointMethodTypes["repos"]["createRelease"]["response"]
 export type ReleaseByTagResponse = RestEndpointMethodTypes["repos"]["getReleaseByTag"]["response"]
@@ -20,11 +20,10 @@ export type ReleaseData = {
 export interface Releases {
     create(
         tag: string,
-        body?: string,
+        previousTagName: string,
         commitHash?: string,
         discussionCategory?: string,
         draft?: boolean,
-        generateReleaseNotes?: boolean,
         makeLatest?: string,
         name?: string,
         prerelease?: boolean
@@ -71,28 +70,34 @@ export class GithubReleases implements Releases {
 
     async create(
         tag: string,
-        body?: string,
+        previousTagName: string,
         commitHash?: string,
         discussionCategory?: string,
         draft?: boolean,
-        generateReleaseNotes?: boolean,
         makeLatest?: string,
         name?: string,
         prerelease?: boolean
     ): Promise<CreateReleaseResponse> {
+        const { data: { body } } = await this.git.rest.repos.generateReleaseNotes({
+            owner: this.inputs.owner,
+            repo: this.inputs.repo,
+            tag_name: tag,
+            previous_tag_name: previousTagName,
+            target_commitish: commitHash,
+        })
         // noinspection TypeScriptValidateJSTypes
         return this.git.rest.repos.createRelease({
             body: body,
             name: name,
             discussion_category_name: discussionCategory,
             draft: draft,
-            generate_release_notes: generateReleaseNotes,
+            generate_release_notes: false,
             make_latest: makeLatest,
             owner: this.inputs.owner,
             prerelease: prerelease,
             repo: this.inputs.repo,
             target_commitish: commitHash,
-            tag_name: tag
+            tag_name: tag,
         })
     }
 
